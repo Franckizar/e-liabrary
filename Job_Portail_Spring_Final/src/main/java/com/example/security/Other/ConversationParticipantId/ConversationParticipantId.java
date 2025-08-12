@@ -1,15 +1,15 @@
-// 14. ConversationParticipantId.java (Composite Key)
-package com.example.security.Other.ConversationParticipantId;
+// // 14. ConversationParticipantId.java (Composite Key)
+// package com.example.security.Other.ConversationParticipantId;
 
-import lombok.*;
+// import lombok.*;
 
-import java.io.Serializable;
+// import java.io.Serializable;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode
-public class ConversationParticipantId implements Serializable {
-    private Integer conversation;
-    private Integer user;
-}
+// @Data
+// @NoArgsConstructor
+// @AllArgsConstructor
+// @EqualsAndHashCode
+// public class ConversationParticipantId implements Serializable {
+//     private Integer conversation;
+//     private Integer user;
+// }

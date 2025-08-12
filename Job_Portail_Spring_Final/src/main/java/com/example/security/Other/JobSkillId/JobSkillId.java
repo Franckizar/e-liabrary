@@ -1,17 +1,17 @@
-package com.example.security.Other.JobSkillId;
+// package com.example.security.Other.JobSkillId;
 
-import lombok.*;
+// import lombok.*;
 
-import java.io.Serializable;
+// import java.io.Serializable;
 
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode
-@Builder
+// @Data
+// @NoArgsConstructor
+// @AllArgsConstructor
+// @EqualsAndHashCode
+// @Builder
 
-public class JobSkillId implements Serializable {
-    private Integer job;
-    private Integer skill;
-}
+// public class JobSkillId implements Serializable {
+//     private Integer job;
+//     private Integer skill;
+// }

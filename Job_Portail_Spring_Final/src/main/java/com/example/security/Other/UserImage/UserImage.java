@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
+// @Entity
 @Table(name = "user_images")
 public class UserImage {
 

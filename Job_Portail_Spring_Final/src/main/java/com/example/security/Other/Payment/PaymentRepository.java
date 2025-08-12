@@ -1,14 +1,14 @@
-package com.example.security.Other.Payment;
+// package com.example.security.Other.Payment;
 
-import java.util.Optional;
-import org.springframework.data.jpa.repository.JpaRepository;
+// import java.util.Optional;
+// import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface PaymentRepository extends JpaRepository<Payment, Integer> {
+// public interface PaymentRepository extends JpaRepository<Payment, Integer> {
 
-    // Remove this if not used anymore
-    // Optional<Payment> findByTransactionId(String reference);
+//     // Remove this if not used anymore
+//     // Optional<Payment> findByTransactionId(String reference);
 
-    Optional<Payment> findBySubscriptionIdAndUserId(Integer subscriptionId, Integer userId);
+//     Optional<Payment> findBySubscriptionIdAndUserId(Integer subscriptionId, Integer userId);
     
-    Optional<Payment> findByTransactionId(String transactionId);
-}
+//     Optional<Payment> findByTransactionId(String transactionId);
+// }

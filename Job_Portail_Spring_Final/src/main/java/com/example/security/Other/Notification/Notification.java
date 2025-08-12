@@ -1,67 +1,67 @@
-// 16. Notification.java
-package com.example.security.Other.Notification;
+// // 16. Notification.java
+// package com.example.security.Other.Notification;
 
-import com.example.security.user.User;
-import jakarta.persistence.*;
-import lombok.*;
+// import com.example.security.user.User;
+// import jakarta.persistence.*;
+// import lombok.*;
 
-import java.time.LocalDateTime;
+// import java.time.LocalDateTime;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Entity
-@Table(name = "notifications")
-public class Notification {
+// @Data
+// @Builder
+// @NoArgsConstructor
+// @AllArgsConstructor
+// @Entity
+// @Table(name = "notifications")
+// public class Notification {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "notification_id")
-    private Long id;
+//     @Id
+//     @GeneratedValue(strategy = GenerationType.IDENTITY)
+//     @Column(name = "notification_id")
+//     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
+//     @ManyToOne(fetch = FetchType.LAZY)
+//     @JoinColumn(name = "user_id", referencedColumnName = "id")
+//     private User user;
 
-    @Enumerated(EnumType.STRING)
-    private NotificationType type;
+//     @Enumerated(EnumType.STRING)
+//     private NotificationType type;
 
-    @Column(name = "reference_id")
-    private Long referenceId;
+//     @Column(name = "reference_id")
+//     private Long referenceId;
 
-    private String title;
+//     private String title;
 
-    @Column(columnDefinition = "TEXT")
-    private String message;
+//     @Column(columnDefinition = "TEXT")
+//     private String message;
 
-    @Column(name = "is_read")
-    @Builder.Default
-    private Boolean isRead = false;
+//     @Column(name = "is_read")
+//     @Builder.Default
+//     private Boolean isRead = false;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+//     @Column(name = "created_at")
+//     private LocalDateTime createdAt;
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-    }
+//     @PrePersist
+//     protected void onCreate() {
+//         createdAt = LocalDateTime.now();
+//     }
 
-    public enum NotificationType {
-        MESSAGE("message"),
-        APPLICATION_STATUS("application_status"),
-        SUBSCRIPTION("subscription"),
-        PAYMENT("payment"),
-        SYSTEM("system");
+//     public enum NotificationType {
+//         MESSAGE("message"),
+//         APPLICATION_STATUS("application_status"),
+//         SUBSCRIPTION("subscription"),
+//         PAYMENT("payment"),
+//         SYSTEM("system");
 
-        private final String value;
+//         private final String value;
 
-        NotificationType(String value) {
-            this.value = value;
-        }
+//         NotificationType(String value) {
+//             this.value = value;
+//         }
 
-        public String getValue() {
-            return value;
-        }
-    }
-}
+//         public String getValue() {
+//             return value;
+//         }
+//     }
+// }
