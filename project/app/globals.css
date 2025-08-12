@@ -1,0 +1,165 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+
+:root {
+  --foreground-rgb: 10, 25, 49;
+  --background-start-rgb: 248, 248, 248;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 248, 248, 248;
+    --background-start-rgb: 10, 25, 49;
+    --background-end-rgb: 8, 20, 39;
+  }
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 97%;
+    --foreground: 213 31% 18%;
+    --card: 0 0% 100%;
+    --card-foreground: 213 31% 18%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 213 31% 18%;
+    --primary: 213 83% 12%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 94%;
+    --secondary-foreground: 213 31% 18%;
+    --muted: 0 0% 94%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 0 0% 94%;
+    --accent-foreground: 213 31% 18%;
+    --destructive: 0 74% 57%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 88%;
+    --input: 0 0% 88%;
+    --ring: 213 83% 12%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 213 83% 8%;
+    --foreground: 0 0% 97%;
+    --card: 213 83% 10%;
+    --card-foreground: 0 0% 97%;
+    --popover: 213 83% 10%;
+    --popover-foreground: 0 0% 97%;
+    --primary: 0 0% 97%;
+    --primary-foreground: 213 83% 12%;
+    --secondary: 213 31% 18%;
+    --secondary-foreground: 0 0% 97%;
+    --muted: 213 31% 18%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 213 31% 18%;
+    --accent-foreground: 0 0% 97%;
+    --destructive: 0 74% 45%;
+    --destructive-foreground: 0 0% 97%;
+    --border: 213 31% 18%;
+    --input: 213 31% 18%;
+    --ring: 0 0% 83%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-off-white dark:bg-blue-night-800 text-blue-night dark:text-off-white font-montserrat transition-colors duration-300;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-montserrat font-semibold;
+    line-height: 1.2;
+  }
+
+  p {
+    @apply font-roboto;
+    line-height: 1.5;
+  }
+}
+
+@layer components {
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .btn-primary {
+    @apply bg-blue-night hover:bg-blue-night-600 text-off-white px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:scale-105 active:scale-95 shadow-medium hover:shadow-strong;
+  }
+
+  .btn-secondary {
+    @apply bg-off-white hover:bg-off-white-600 text-blue-night border border-blue-night px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:scale-105 active:scale-95 shadow-soft hover:shadow-medium;
+  }
+
+  .btn-accent {
+    @apply bg-accent hover:bg-accent-600 text-off-white px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:scale-105 active:scale-95 shadow-medium hover:shadow-strong;
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-strong hover:-translate-y-1 hover:scale-105;
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-blue-night to-accent bg-clip-text text-transparent;
+  }
+
+  .animate-fade-in-up {
+    @apply animate-slide-up;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-off-white dark:bg-blue-night-700;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-blue-night-300 dark:bg-off-white-700 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-blue-night-400 dark:bg-off-white-600;
+}
+
+/* Focus styles for accessibility */
+.focus-visible:focus {
+  @apply outline-none ring-2 ring-blue-night dark:ring-off-white ring-offset-2 ring-offset-off-white dark:ring-offset-blue-night-800;
+}
+
+/* Loading spinner */
+.spinner {
+  @apply inline-block w-4 h-4 border-2 border-current border-r-transparent rounded-full animate-spin;
+}
