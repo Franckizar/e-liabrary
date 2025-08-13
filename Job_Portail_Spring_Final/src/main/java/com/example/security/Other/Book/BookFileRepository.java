@@ -18,7 +18,7 @@ public interface BookFileRepository extends JpaRepository<BookFile, Long> {
     List<BookFile> findByBookId(Long bookId);
 
     // Find file by book ID and type (e.g., COVER)
-    Optional<BookFile> findByBookIdAndType(Long bookId, String type);
+     Optional<BookFile> findByBook_IdAndType(Long bookId, String type);
 
     // Find all files by type
     List<BookFile> findByType(String type);

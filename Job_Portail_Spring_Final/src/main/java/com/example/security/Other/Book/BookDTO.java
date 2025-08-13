@@ -24,6 +24,7 @@ public class BookDTO {
     private Set<String> authors = new HashSet<>();
     private Set<String> categories = new HashSet<>();
     private String publisherName;
+    
 
     public BookDTO(Book book) {
         this.id = book.getId();

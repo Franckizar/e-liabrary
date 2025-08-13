@@ -36,7 +36,17 @@ public class SecurityConfig {
                 .requestMatchers(
                     "/api/v1/auth/**",
                     "/swagger-ui/**",
-                    "/v3/api-docs/**"
+                    "/v3/api-docs/**",
+                      "/swagger-ui/**",
+        "/v3/api-docs/**",
+        "/**/*.html",      // allow all HTML
+        "/**/*.css",       // allow all CSS
+        "/**/*.js",        // allow all JS
+        "/**/*.png",       // allow all images
+        "/**/*.jpg",
+        "/**/*.jpeg",
+        "/**/*.gif",
+        "/**/*.pdf"
                 ).permitAll()
                 .requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN")
                 .requestMatchers("/api/v1/user/**").hasAuthority("USER")

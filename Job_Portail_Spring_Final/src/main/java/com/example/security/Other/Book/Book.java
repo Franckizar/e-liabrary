@@ -36,6 +36,10 @@ public class Book {
     private String format; // e.g., Hardcover, Paperback, Ebook, Audio
 
     // Book ↔ Publisher (Many books can be from one publisher)
+//     private boolean isNew = false;
+// private boolean isBestseller = false;
+// private double rating = 0.0;
+// private int reviewCount = 0;
     @ManyToOne
     @JoinColumn(name = "publisher_id")
     private PublisherProfile publisher;
