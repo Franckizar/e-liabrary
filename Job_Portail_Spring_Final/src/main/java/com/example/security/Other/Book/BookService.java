@@ -38,52 +38,64 @@
         }
 
         // ---------------- Book CRUD ----------------
-    public Book createBook(Book book) {
-        validateBookData(book);
+ // Inside BookService
+public Book createBook(Book book) {
+    validateBookData(book);
 
-        // Attach authors
-        if (book.getAuthors() != null && !book.getAuthors().isEmpty()) {
-            Set<AuthorProfile> authors = book.getAuthors().stream()
-                    .map(author -> authorRepository.findById(author.getId())
-                            .orElseThrow(() -> new IllegalArgumentException("Author not found with id: " + author.getId())))
-                    .collect(Collectors.toSet());
-            book.setAuthors(authors);
-        }
-
-        // Attach categories
-        if (book.getCategories() != null && !book.getCategories().isEmpty()) {
-            Set<BookCategory> categories = book.getCategories().stream()
-                    .map(cat -> categoryRepository.findById(cat.getId())
-                            .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + cat.getId())))
-                    .collect(Collectors.toSet());
-            book.setCategories(categories);
-        }
-
-        // Attach publisher
-        if (book.getPublisher() != null && book.getPublisher().getId() != null) {
-            PublisherProfile publisher = publisherRepository.findById(book.getPublisher().getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Publisher not found with id: " + book.getPublisher().getId()));
-            book.setPublisher(publisher);
-        }
-
-        return bookRepository.save(book);
+    // Attach authors
+    if (book.getAuthors() != null && !book.getAuthors().isEmpty()) {
+        Set<AuthorProfile> authors = book.getAuthors().stream()
+                .map(author -> authorRepository.findById(author.getId())
+                        .orElseThrow(() -> new IllegalArgumentException("Author not found with id: " + author.getId())))
+                .collect(Collectors.toSet());
+        book.setAuthors(authors);
     }
 
-        public Book updateBook(Long id, Book updatedBook) {
-            return bookRepository.findById(id)
-                    .map(book -> {
-                        book.setTitle(updatedBook.getTitle());
-                        book.setIsbn(updatedBook.getIsbn());
-                        book.setDescription(updatedBook.getDescription());
-                        book.setPrice(updatedBook.getPrice());
-                        book.setFormat(updatedBook.getFormat());
-                        book.setPublisher(updatedBook.getPublisher());
-                        book.setAuthors(updatedBook.getAuthors());
-                        book.setCategories(updatedBook.getCategories());
-                        return bookRepository.save(book);
-                    })
-                    .orElseThrow(() -> new IllegalArgumentException("Book not found with id: " + id));
-        }
+    // Attach categories
+    if (book.getCategories() != null && !book.getCategories().isEmpty()) {
+        Set<BookCategory> categories = book.getCategories().stream()
+                .map(cat -> categoryRepository.findById(cat.getId())
+                        .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + cat.getId())))
+                .collect(Collectors.toSet());
+        book.setCategories(categories);
+    }
+
+    // Attach publisher
+    if (book.getPublisher() != null && book.getPublisher().getId() != null) {
+        PublisherProfile publisher = publisherRepository.findById(book.getPublisher().getId())
+                .orElseThrow(() -> new IllegalArgumentException("Publisher not found with id: " + book.getPublisher().getId()));
+        book.setPublisher(publisher);
+    }
+
+    // Handle new fields
+    if (book.getOriginalPrice() == null) book.setOriginalPrice(book.getPrice());
+    // rating and reviewCount default already handled in entity
+    // isNew and isBestseller default already handled in entity
+
+    return bookRepository.save(book);
+}
+
+public Book updateBook(Long id, Book updatedBook) {
+    return bookRepository.findById(id)
+            .map(book -> {
+                book.setTitle(updatedBook.getTitle());
+                book.setIsbn(updatedBook.getIsbn());
+                book.setDescription(updatedBook.getDescription());
+                book.setPrice(updatedBook.getPrice());
+                book.setOriginalPrice(updatedBook.getOriginalPrice());
+                book.setFormat(updatedBook.getFormat());
+                book.setIsNew(updatedBook.isNew());
+                book.setIsBestseller(updatedBook.isBestseller());
+                book.setRating(updatedBook.getRating());
+                book.setReviewCount(updatedBook.getReviewCount());
+                book.setPublisher(updatedBook.getPublisher());
+                book.setAuthors(updatedBook.getAuthors());
+                book.setCategories(updatedBook.getCategories());
+                return bookRepository.save(book);
+            })
+            .orElseThrow(() -> new IllegalArgumentException("Book not found with id: " + id));
+}
+
 
         public void deleteBook(Long id) {
             if (!bookRepository.existsById(id)) {

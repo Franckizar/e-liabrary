@@ -33,18 +33,21 @@ public class Book {
 
     private BigDecimal price;
 
+    private BigDecimal originalPrice; // new field
+
     private String format; // e.g., Hardcover, Paperback, Ebook, Audio
 
-    // Book ↔ Publisher (Many books can be from one publisher)
-//     private boolean isNew = false;
-// private boolean isBestseller = false;
-// private double rating = 0.0;
-// private int reviewCount = 0;
+    private boolean isNew = false;        // new field
+    private boolean isBestseller = false; // new field
+    private double rating = 0.0;          // new field
+    private int reviewCount = 0;          // new field
+
+    // Book ↔ Publisher
     @ManyToOne
     @JoinColumn(name = "publisher_id")
     private PublisherProfile publisher;
 
-    // Book ↔ Author (Many-to-Many through book_author)
+    // Book ↔ Author
     @ManyToMany
     @JoinTable(
         name = "book_author",
@@ -53,7 +56,7 @@ public class Book {
     )
     private Set<AuthorProfile> authors = new HashSet<>();
 
-    // Book ↔ Category (Many-to-Many)
+    // Book ↔ Category
     @ManyToMany
     @JoinTable(
         name = "book_category",
@@ -62,7 +65,7 @@ public class Book {
     )
     private Set<BookCategory> categories = new HashSet<>();
 
-    // Book ↔ File (One-to-Many)
+    // Book ↔ File
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<BookFile> files = new HashSet<>();
 
@@ -73,5 +76,21 @@ public class Book {
                 .findFirst()
                 .orElse(null);
     }
+
+    // Helper to get main genre (first category name)
+    public String getMainGenre() {
+        return categories.stream()
+                .findFirst()
+                .map(BookCategory::getName)
+                .orElse("Unknown");
+    }
+
+    // Manual setters for boolean fields so BookService can call setIsNew/setIsBestseller
+    public void setIsNew(boolean isNew) {
+        this.isNew = isNew;
+    }
+
+    public void setIsBestseller(boolean isBestseller) {
+        this.isBestseller = isBestseller;
+    }
 }
-    

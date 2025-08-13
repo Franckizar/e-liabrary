@@ -8,7 +8,15 @@ import java.util.stream.Collectors;
 
 import com.example.security.user.User;
 import com.example.security.user.AuthorProfile.AuthorProfile;
+// import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+// import lombok.Setter;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class BookDTO {
 
     private Long id;
@@ -16,31 +24,53 @@ public class BookDTO {
     private String isbn;
     private String description;
     private BigDecimal price;
+    private BigDecimal originalPrice; // new
     private String format;
+    private boolean isNew;             // new
+    private boolean isBestseller;      // new
+    private double rating;             // new
+    private int reviewCount;           // new
+    private String genre;              // new (from first category)
     private String coverFileName;
     private String coverFileType;
     private String coverImageBase64;
     private Long coverFileId;
+    private String coverUrl;           // new: can be base64 URL
     private Set<String> authors = new HashSet<>();
     private Set<String> categories = new HashSet<>();
     private String publisherName;
-    
 
+
+    public void setIsNew(boolean isNew) {
+    this.isNew = isNew;
+}
+
+public void setIsBestseller(boolean isBestseller) {
+    this.isBestseller = isBestseller;
+}
+
+
+    // Custom constructor that maps from Book entity
     public BookDTO(Book book) {
         this.id = book.getId();
         this.title = book.getTitle();
         this.isbn = book.getIsbn();
         this.description = book.getDescription();
         this.price = book.getPrice();
+        this.originalPrice = book.getOriginalPrice();
         this.format = book.getFormat();
+        this.isNew = book.isNew();
+        this.isBestseller = book.isBestseller();
+        this.rating = book.getRating();
+        this.reviewCount = book.getReviewCount();
+        this.genre = book.getMainGenre();
 
-        // Publisher
         if (book.getPublisher() != null) {
             this.publisherName = book.getPublisher().getCompanyName();
         }
 
-        // Cover file
-        if (book.getFiles() != null) {
+        // Cover file mapping
+        if (book.getFiles() != null && !book.getFiles().isEmpty()) {
             book.getFiles().stream()
                 .filter(f -> "COVER".equals(f.getType()))
                 .findFirst()
@@ -50,66 +80,38 @@ public class BookDTO {
                     this.coverFileId = f.getId();
                     if (f.getData() != null) {
                         this.coverImageBase64 = Base64.getEncoder().encodeToString(f.getData());
+                        this.coverUrl = "data:" + f.getFileType() + ";base64," + this.coverImageBase64;
                     }
                 });
         }
 
-        // Authors
+        // Authors mapping
         if (book.getAuthors() != null) {
             this.authors = book.getAuthors().stream()
                     .map(this::getAuthorName)
                     .collect(Collectors.toSet());
         }
 
-        // Categories
+        // Categories mapping
         if (book.getCategories() != null) {
             this.categories = book.getCategories().stream()
                     .filter(c -> c != null && c.getName() != null)
-                    .map(c -> c.getName())
+                    .map(BookCategory::getName)
                     .collect(Collectors.toSet());
         }
     }
 
     private String getAuthorName(AuthorProfile author) {
         if (author == null) return "Unknown Author";
-
-        if (author.getPenName() != null && !author.getPenName().trim().isEmpty())
+        if (author.getPenName() != null && !author.getPenName().trim().isEmpty()) 
             return author.getPenName();
 
         User user = author.getUser();
         if (user != null) {
             String name = ((user.getFirstname() != null ? user.getFirstname() : "") + " " +
-                          (user.getLastname() != null ? user.getLastname() : "")).trim();
+                           (user.getLastname() != null ? user.getLastname() : "")).trim();
             if (!name.isEmpty()) return name;
         }
         return "Unknown Author";
     }
-
-    // ---------- Getters and setters ----------
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
-    public String getIsbn() { return isbn; }
-    public void setIsbn(String isbn) { this.isbn = isbn; }
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-    public BigDecimal getPrice() { return price; }
-    public void setPrice(BigDecimal price) { this.price = price; }
-    public String getFormat() { return format; }
-    public void setFormat(String format) { this.format = format; }
-    public String getCoverFileName() { return coverFileName; }
-    public void setCoverFileName(String coverFileName) { this.coverFileName = coverFileName; }
-    public String getCoverFileType() { return coverFileType; }
-    public void setCoverFileType(String coverFileType) { this.coverFileType = coverFileType; }
-    public String getCoverImageBase64() { return coverImageBase64; }
-    public void setCoverImageBase64(String coverImageBase64) { this.coverImageBase64 = coverImageBase64; }
-    public Long getCoverFileId() { return coverFileId; }
-    public void setCoverFileId(Long coverFileId) { this.coverFileId = coverFileId; }
-    public Set<String> getAuthors() { return authors; }
-    public void setAuthors(Set<String> authors) { this.authors = authors; }
-    public Set<String> getCategories() { return categories; }
-    public void setCategories(Set<String> categories) { this.categories = categories; }
-    public String getPublisherName() { return publisherName; }
-    public void setPublisherName(String publisherName) { this.publisherName = publisherName; }
 }
