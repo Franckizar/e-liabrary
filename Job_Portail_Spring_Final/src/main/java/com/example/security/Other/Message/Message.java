@@ -1,78 +1,75 @@
-// package com.example.security.Other.Message;
+// 1. Message.java - First we need to define the Message entity with proper enums
+package com.example.security.Other.Message;
 
-// import com.example.security.Other.Conversation.Conversation;
-// import com.example.security.user.User;
-// import com.fasterxml.jackson.annotation.JsonIgnore;
-// import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-// import jakarta.persistence.*;
-// import lombok.*;
+import com.example.security.Other.Conversation.Conversation;
+import com.example.security.user.User;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-// import java.time.LocalDateTime;
+import java.time.LocalDateTime;
 
-// @Entity
-// @Table(name = "messages")
-// @Data
-// @NoArgsConstructor
-// @AllArgsConstructor
-// @Builder
-// public class Message {
+@Entity
+@Table(name = "messages")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Message {
 
-//     @Id
-//     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//     @Column(name = "message_id")
-//     private Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-//     @Column(name = "message_text", nullable = false, columnDefinition = "TEXT")
-//     private String content;
+    @Column(columnDefinition = "TEXT")
+    private String content;
 
-//     @ManyToOne(fetch = FetchType.LAZY)
-//     @JoinColumn(name = "conversation_id", nullable = false)
-//     @JsonIgnore
-//     private Conversation conversation;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "conversation_id", nullable = false)
+    private Conversation conversation;
 
-//     @ManyToOne(fetch = FetchType.LAZY)
-//     @JoinColumn(name = "sender_id", nullable = false)
-//     @JsonIgnore
-//     private User sender;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sender_id", nullable = false)
+    private User sender;
 
-//     @ManyToOne(fetch = FetchType.LAZY)
-//     @JoinColumn(name = "receiver_id")
-//     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-//     private User receiver;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "receiver_id")
+    private User receiver;
 
-//     @Column(name = "timestamp", nullable = false)
-//     private LocalDateTime timestamp;
+    @Column(nullable = false)
+    private LocalDateTime timestamp;
 
-//     @Column(name = "is_read", nullable = false)
-//     @Builder.Default
-//     private Boolean isRead = false;
+    @Column(name = "is_read")
+    @Builder.Default
+    private Boolean isRead = false;
 
-//     @Column(name = "message_type")
-//     @Enumerated(EnumType.STRING)
-//     @Builder.Default
-//     private MessageType messageType = MessageType.TEXT;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "message_type")
+    @Builder.Default
+    private MessageType messageType = MessageType.TEXT;
 
-//     @PrePersist
-//     protected void onCreate() {
-//         if (timestamp == null) {
-//             timestamp = LocalDateTime.now();
-//         }
-//     }
+    public enum MessageType {
+        TEXT,
+        IMAGE,
+        FILE,
+        AUDIO,
+        SYSTEM,
+        EDITED,
+        DELETED
+    }
 
-//     public enum MessageType {
-//         TEXT, IMAGE, FILE, SYSTEM
-//     }
-
-//     // Helper methods
-//     public boolean isFromUser(Integer userId) {
-//         return sender != null && sender.getId().equals(userId);
-//     }
-
-//     public boolean isToUser(Integer userId) {
-//         return receiver != null && receiver.getId().equals(userId);
-//     }
-
-//     public void markAsRead() {
-//         this.isRead = true;
-//     }
-// }
+    @PrePersist
+    protected void onCreate() {
+        if (timestamp == null) {
+            timestamp = LocalDateTime.now();
+        }
+        if (isRead == null) {
+            isRead = false;
+        }
+        if (messageType == null) {
+            messageType = MessageType.TEXT;
+        }
+    }
+}

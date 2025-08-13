@@ -1,5 +1,6 @@
 package com.example.security.user;
 
+import com.example.security.Other.Message.Message;
 import com.example.security.user.Admin.AdminProfile;
 import com.example.security.user.AuthorProfile.AuthorProfile;
 import com.example.security.user.PublisherProfile.PublisherProfile;
@@ -14,6 +15,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -88,6 +90,20 @@ public class User implements UserDetails {
 
     @Column(name = "subscription_expires_at")
     private LocalDateTime subscriptionExpiresAt;
+
+
+    // ======== Message Relationships ========
+
+@OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
+@JsonIgnore
+@Builder.Default
+private List<Message> sentMessages = new ArrayList<>();
+
+@OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
+@JsonIgnore
+@Builder.Default
+private List<Message> receivedMessages = new ArrayList<>();
+
 
     // ======== Utility Methods ========
 

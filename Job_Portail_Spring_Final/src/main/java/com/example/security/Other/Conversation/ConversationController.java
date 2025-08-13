@@ -1,131 +1,151 @@
-// package com.example.security.Other.Conversation;
 
-// import com.example.security.Other.ConversationParticipant.ConversationParticipant;
-// import com.example.security.Other.Message.Message;
-// import com.example.security.user.User;
-// import lombok.RequiredArgsConstructor;
-// import org.springframework.http.ResponseEntity;
-// import org.springframework.web.bind.annotation.*;
+// 6. ConversationController.java - ÉdiNova Community Chat
+package com.example.security.Other.Conversation;
 
-// import java.util.List;
-// import java.util.Map;
+import com.example.security.Other.ConversationParticipant.ConversationParticipant;
+import com.example.security.Other.Message.Message;
+import com.example.security.user.User;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-// @RestController
-// @RequestMapping("/api/v1/auth/conversations")
-// @RequiredArgsConstructor
-// @CrossOrigin(origins = "*")
-// public class ConversationController {
+import java.util.List;
+import java.util.Map;
 
-//     private final ConversationService conversationService;
+@RestController
+@RequestMapping("/api/v1/auth/community/conversations")
+@RequiredArgsConstructor
+@CrossOrigin(origins = "*")
+public class ConversationController {
 
-//     // --- DTOs ---
-//     public static record CreateConversationRequest(List<Integer> userIds) {}
-//     public static record SendMessageRequest(Integer senderId, String messageText) {}
-//     public static record SendDirectMessageRequest(Integer senderId, Integer receiverId, String messageText) {}
+    private final ConversationService conversationService;
 
-//     // --- Create a new conversation (group or 1-1) ---
-//     @PostMapping
-//     public ResponseEntity<?> createConversation(@RequestBody CreateConversationRequest request) {
-//         if (request.userIds() == null || request.userIds().isEmpty()) {
-//             return ResponseEntity.badRequest().body(Map.of("error", "User IDs list is required."));
-//         }
-//         try {
-//             Conversation conversation = conversationService.createConversation(request.userIds());
-//             return ResponseEntity.ok(conversation);
-//         } catch (Exception e) {
-//             return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
-//         }
-//     }
+    // --- DTOs for ÉdiNova Community ---
+    public static record CreateConversationRequest(List<Long> userIds, String title) {}
+    public static record SendMessageRequest(Long senderId, String messageText) {}
+    public static record SendDirectMessageRequest(Long senderId, Long receiverId, String messageText) {}
+    public static record CreateBookClubRequest(List<Long> userIds, String clubName, Long bookId) {}
 
-//     // --- Add a participant to an existing conversation ---
-//     @PostMapping("/{conversationId}/participants/{userId}")
-//     public ResponseEntity<?> addParticipant(
-//             @PathVariable Integer conversationId,
-//             @PathVariable Integer userId) {
-//         try {
-//             ConversationParticipant participant = conversationService.addParticipant(conversationId, userId);
-//             return ResponseEntity.ok(participant);
-//         } catch (IllegalArgumentException | IllegalStateException e) {
-//             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-//         }
-//     }
+    // --- Create a new conversation (readers/authors discussion) ---
+    @PostMapping
+    public ResponseEntity<?> createConversation(@RequestBody CreateConversationRequest request) {
+        if (request.userIds() == null || request.userIds().isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "User IDs list is required for community conversation."));
+        }
+        try {
+            Conversation conversation = conversationService.createConversation(request.userIds(), request.title());
+            return ResponseEntity.ok(conversation);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
+        }
+    }
 
-//     // --- Send a message in an existing conversation ---
-//     @PostMapping("/{conversationId}/messages")
-//     public ResponseEntity<?> sendMessage(
-//             @PathVariable Integer conversationId,
-//             @RequestBody SendMessageRequest request) {
+    // --- Create book club conversation ---
+    @PostMapping("/book-club")
+    public ResponseEntity<?> createBookClub(@RequestBody CreateBookClubRequest request) {
+        if (request.userIds() == null || request.userIds().isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "User IDs list is required for book club."));
+        }
+        try {
+            Conversation conversation = conversationService.createBookClubConversation(
+                request.userIds(), request.clubName(), request.bookId());
+            return ResponseEntity.ok(conversation);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
+        }
+    }
 
-//         if (request.senderId() == null || request.messageText() == null || request.messageText().isBlank()) {
-//             return ResponseEntity.badRequest().body(Map.of("error", "senderId and messageText are required."));
-//         }
+    // --- Add a reader/author to an existing conversation ---
+    @PostMapping("/{conversationId}/participants/{userId}")
+    public ResponseEntity<?> addParticipant(
+            @PathVariable Long conversationId,
+            @PathVariable Long userId) {
+        try {
+            ConversationParticipant participant = conversationService.addParticipant(conversationId, userId);
+            return ResponseEntity.ok(participant);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
 
-//         try {
-//             Message message = conversationService.sendMessage(conversationId, request.senderId(), request.messageText());
-//             return ResponseEntity.ok(message);
-//         } catch (IllegalArgumentException | IllegalStateException e) {
-//             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-//         }
-//     }
+    // --- Send a message in community conversation ---
+    @PostMapping("/{conversationId}/messages")
+    public ResponseEntity<?> sendMessage(
+            @PathVariable Long conversationId,
+            @RequestBody SendMessageRequest request) {
 
-//     // --- Send direct message (creates new conversation if needed) ---
-//     @PostMapping("/direct")
-//     public ResponseEntity<?> sendDirectMessage(@RequestBody SendDirectMessageRequest request) {
-//         if (request.senderId() == null || request.receiverId() == null ||
-//             request.messageText() == null || request.messageText().isBlank()) {
-//             return ResponseEntity.badRequest().body(Map.of("error", "senderId, receiverId, and messageText are required."));
-//         }
+        if (request.senderId() == null || request.messageText() == null || request.messageText().isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "senderId and messageText are required."));
+        }
 
-//         try {
-//             Message message = conversationService.sendDirectMessage(
-//                     request.senderId(), request.receiverId(), request.messageText());
-//             return ResponseEntity.ok(message);
-//         } catch (IllegalArgumentException | IllegalStateException e) {
-//             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-//         }
-//     }
+        try {
+            Message message = conversationService.sendMessage(conversationId, request.senderId(), request.messageText());
+            return ResponseEntity.ok(message);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
 
-//     // --- Get all messages from a conversation ---
-//     @GetMapping("/{conversationId}/messages")
-//     public ResponseEntity<?> getMessages(@PathVariable Integer conversationId) {
-//         try {
-//             List<Message> messages = conversationService.getMessages(conversationId);
-//             return ResponseEntity.ok(messages);
-//         } catch (IllegalArgumentException e) {
-//             return ResponseEntity.status(404).body(Map.of("error", "Conversation not found"));
-//         }
-//     }
+    // --- Send direct message between community members ---
+    @PostMapping("/direct")
+    public ResponseEntity<?> sendDirectMessage(@RequestBody SendDirectMessageRequest request) {
+        if (request.senderId() == null || request.receiverId() == null ||
+            request.messageText() == null || request.messageText().isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "senderId, receiverId, and messageText are required."));
+        }
 
-//     // --- Get participants of a conversation ---
-//     @GetMapping("/{conversationId}/participants")
-//     public ResponseEntity<?> getParticipants(@PathVariable Integer conversationId) {
-//         try {
-//             List<User> participants = conversationService.getParticipants(conversationId);
-//             return ResponseEntity.ok(participants);
-//         } catch (IllegalArgumentException e) {
-//             return ResponseEntity.status(404).body(Map.of("error", "Conversation not found"));
-//         }
-//     }
+        try {
+            Message message = conversationService.sendDirectMessage(
+                    request.senderId(), request.receiverId(), request.messageText());
+            return ResponseEntity.ok(message);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
 
-//     // --- Get all conversations for a user ---
-//     @GetMapping("/user/{userId}")
-//     public ResponseEntity<?> getUserConversations(@PathVariable Integer userId) {
-//         try {
-//             List<Conversation> conversations = conversationService.getUserConversations(userId);
-//             return ResponseEntity.ok(conversations);
-//         } catch (Exception e) {
-//             return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
-//         }
-//     }
+    // --- Get all messages from a community conversation ---
+    @GetMapping("/{conversationId}/messages")
+    public ResponseEntity<?> getMessages(@PathVariable Long conversationId) {
+        try {
+            List<Message> messages = conversationService.getMessages(conversationId);
+            return ResponseEntity.ok(messages);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body(Map.of("error", "Community conversation not found"));
+        }
+    }
 
-//     // --- Get conversation by ID (renamed to avoid path conflict with "/direct") ---
-//     // @GetMapping("/by-id/{conversationId}")
-//     // public ResponseEntity<?> getConversationById(@PathVariable Integer conversationId) {
-//     //     try {
-//     //         Conversation conversation = conversationService.getConversationById(conversationId);
-//     //         return ResponseEntity.ok(conversation);
-//     //     } catch (IllegalArgumentException e) {
-//     //         return ResponseEntity.status(404).body(Map.of("error", "Conversation not found"));
-//     //     }
-//     // }
-// }
+    // --- Get participants of a community conversation ---
+    @GetMapping("/{conversationId}/participants")
+    public ResponseEntity<?> getParticipants(@PathVariable Long conversationId) {
+        try {
+            List<User> participants = conversationService.getParticipants(conversationId);
+            return ResponseEntity.ok(participants);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body(Map.of("error", "Community conversation not found"));
+        }
+    }
+
+    // --- Get all conversations for a community member ---
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<?> getUserConversations(@PathVariable Long userId) {
+        try {
+            List<Conversation> conversations = conversationService.getUserConversations(userId);
+            return ResponseEntity.ok(conversations);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    // --- Get conversation by ID ---
+    @GetMapping("/by-id/{conversationId}")
+    public ResponseEntity<?> getConversationById(@PathVariable Long conversationId) {
+        try {
+            Conversation conversation = conversationService.getConversationById(conversationId);
+            return ResponseEntity.ok(conversation);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body(Map.of("error", "Community conversation not found"));
+        }
+    }
+}
+
+// ================================================================================================

@@ -1,61 +1,67 @@
-// package com.example.security.Other.Conversation;
 
-// import jakarta.persistence.*;
-// import lombok.*;
-// import java.time.LocalDateTime;
-// import java.util.ArrayList;
-// import java.util.List;
+// 2. Conversation.java - Entity definition
+package com.example.security.Other.Conversation;
 
-// import com.example.security.Other.ConversationParticipant.ConversationParticipant;
-// import com.example.security.Other.Message.Message;
+import com.example.security.Other.ConversationParticipant.ConversationParticipant;
+import com.example.security.Other.Message.Message;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-// @Entity
-// @Table(name = "conversations")
-// @Data
-// @NoArgsConstructor
-// @AllArgsConstructor
-// @Builder
-// public class Conversation {
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-//     @Id
-//     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//     @Column(name = "conversation_id")
-//     private Integer id;
+@Entity
+@Table(name = "conversations")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Conversation {
 
-//     @Column(name = "created_at", nullable = false, updatable = false)
-//     private LocalDateTime createdAt;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-//     @OneToMany(mappedBy = "conversation", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-//     @Builder.Default
-//     private List<ConversationParticipant> participants = new ArrayList<>();
+    @Column(name = "title")
+    private String title;
 
-//     @OneToMany(mappedBy = "conversation", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-//     @Builder.Default
-//     private List<Message> messages = new ArrayList<>();
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
 
-//     @PrePersist
-//     protected void onCreate() {
-//         createdAt = LocalDateTime.now();
-//     }
+    @Column(name = "is_group_chat")
+    @Builder.Default
+    private Boolean isGroupChat = false;
 
-//     // Convenience methods
-//     public void addParticipant(ConversationParticipant participant) {
-//         participants.add(participant);
-//         participant.setConversation(this);
-//     }
+    @OneToMany(mappedBy = "conversation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<ConversationParticipant> participants = new ArrayList<>();
 
-//     public void removeParticipant(ConversationParticipant participant) {
-//         participants.remove(participant);
-//         participant.setConversation(null);
-//     }
+    @OneToMany(mappedBy = "conversation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OrderBy("timestamp ASC")
+    @Builder.Default
+    private List<Message> messages = new ArrayList<>();
 
-//     public void addMessage(Message message) {
-//         messages.add(message);
-//         message.setConversation(this);
-//     }
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+        if (isGroupChat == null) {
+            isGroupChat = false;
+        }
+    }
 
-//     public void removeMessage(Message message) {
-//         messages.remove(message);
-//         message.setConversation(null);
-//     }
-// }
+    public void addParticipant(ConversationParticipant participant) {
+        participants.add(participant);
+        participant.setConversation(this);
+    }
+
+    public void removeParticipant(ConversationParticipant participant) {
+        participants.remove(participant);
+        participant.setConversation(null);
+    }
+}

@@ -1,6 +1,10 @@
 package com.example.security.user.AuthorProfile;
 
 
+import java.util.HashSet;
+import java.util.Set;
+
+import com.example.security.Other.Book.Book;
 import com.example.security.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -26,4 +30,9 @@ public class AuthorProfile {
     private String penName;
     @Column(length = 2000)
     private String biography;
+
+       // Author ↔ Book (Many-to-Many)
+    @ManyToMany(mappedBy = "authors")
+    @Builder.Default
+    private Set<Book> books = new HashSet<>();
 }
