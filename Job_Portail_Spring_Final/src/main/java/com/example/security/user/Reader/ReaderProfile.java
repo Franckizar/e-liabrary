@@ -6,13 +6,13 @@ import com.example.security.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "reader_profiles")
+@EqualsAndHashCode(exclude = {"user"})
 public class ReaderProfile {
 
     @Id

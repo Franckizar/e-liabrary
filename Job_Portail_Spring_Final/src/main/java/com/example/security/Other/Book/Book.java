@@ -61,4 +61,13 @@ public class Book {
     // Book ↔ File (One-to-Many)
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<BookFile> files = new HashSet<>();
+
+    // Helper method to get cover file
+    public BookFile getCover() {
+        return files.stream()
+                .filter(f -> "COVER".equals(f.getType()))
+                .findFirst()
+                .orElse(null);
+    }
 }
+    

@@ -162,4 +162,16 @@ private List<Message> receivedMessages = new ArrayList<>();
         public Integer getApplicationLimit() { return applicationLimit; }
         public String getDescription() { return description; }
     }
+
+
+    // ======== Utility Methods ========
+public String getFullname() {
+    String first = (firstname != null) ? firstname.trim() : "";
+    String last = (lastname != null) ? lastname.trim() : "";
+    if (first.isEmpty() && last.isEmpty()) {
+        return "Unknown User";
+    }
+    return (first + " " + last).trim();
+}
+
 }

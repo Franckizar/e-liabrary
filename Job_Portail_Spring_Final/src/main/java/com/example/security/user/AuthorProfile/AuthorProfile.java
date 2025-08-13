@@ -1,6 +1,5 @@
 package com.example.security.user.AuthorProfile;
 
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,6 +15,7 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "author_profiles")
+@EqualsAndHashCode(exclude = {"user", "books"})
 public class AuthorProfile {
 
     @Id
@@ -28,10 +28,10 @@ public class AuthorProfile {
     private User user;
 
     private String penName;
+
     @Column(length = 2000)
     private String biography;
 
-       // Author ↔ Book (Many-to-Many)
     @ManyToMany(mappedBy = "authors")
     @Builder.Default
     private Set<Book> books = new HashSet<>();

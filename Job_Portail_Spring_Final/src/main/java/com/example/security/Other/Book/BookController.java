@@ -1,5 +1,6 @@
 package com.example.security.Other.Book;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,14 +22,14 @@ public class BookController {
         this.bookService = bookService;
     }
 
-    // ---------------- Book CRUD ----------------
+    // ----------------- Book CRUD -----------------
     @PostMapping
     public ResponseEntity<?> createBook(@RequestBody Book book) {
         try {
-            Book created = bookService.createBook(book);
-            return ResponseEntity.status(HttpStatus.CREATED).body(new BookDTO(created));
+            Book createdBook = bookService.createBook(book);
+            return ResponseEntity.status(HttpStatus.CREATED).body(new BookDTO(createdBook));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
 
@@ -46,14 +47,36 @@ public class BookController {
         return ResponseEntity.ok(books);
     }
 
-    // ---------------- File Management ----------------
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateBook(@PathVariable Long id, @RequestBody Book book) {
+        try {
+            Book updatedBook = bookService.updateBook(id, book);
+            return ResponseEntity.ok(new BookDTO(updatedBook));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteBook(@PathVariable Long id) {
+        try {
+            bookService.deleteBook(id);
+            return ResponseEntity.ok("Book deleted successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    // ----------------- File Management -----------------
     @PostMapping(value = "/{bookId}/files", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadBookFile(@PathVariable Long bookId, @RequestParam("file") MultipartFile file) {
         try {
-            BookFile saved = bookService.uploadBookFile(bookId, file);
-            return ResponseEntity.status(HttpStatus.CREATED).body(new BookFileDTO(saved));
-        } catch (IOException | IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            BookFile bookFile = bookService.uploadBookFile(bookId, file);
+            return ResponseEntity.status(HttpStatus.CREATED).body(new BookFileDTO(bookFile));
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error uploading file: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
 
@@ -62,6 +85,13 @@ public class BookController {
         List<BookFileDTO> files = bookService.getBookFiles(bookId)
                 .stream().map(BookFileDTO::new).collect(Collectors.toList());
         return ResponseEntity.ok(files);
+    }
+
+    @GetMapping("/{bookId}/files/{fileType}")
+    public ResponseEntity<?> getBookFileByType(@PathVariable Long bookId, @PathVariable String fileType) {
+        return bookService.getBookFileByType(bookId, fileType)
+                .map(file -> ResponseEntity.ok(new BookFileDTO(file)))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/files/{fileId}")
@@ -77,27 +107,37 @@ public class BookController {
     public ResponseEntity<?> deleteBookFile(@PathVariable Long fileId) {
         try {
             bookService.deleteBookFile(fileId);
-            return ResponseEntity.ok("File deleted");
+            return ResponseEntity.ok("File deleted successfully");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
 
+    // ----------------- Cover Management -----------------
+    @PostMapping(value = "/{bookId}/cover", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadCover(@PathVariable Long bookId, @RequestParam("cover") MultipartFile cover) {
+        try {
+            BookFile coverFile = bookService.uploadCover(bookId, cover);
+            return ResponseEntity.status(HttpStatus.CREATED).body(new BookFileDTO(coverFile));
+        } catch (IOException | IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
 
-@GetMapping("/files/download/{fileId}")
-public ResponseEntity<byte[]> downloadBookFile(@PathVariable Long fileId) {
-    try {
-        BookFileContent fileContent = bookService.getBookFileContentById(fileId);
+    @GetMapping("/{bookId}/cover")
+    public ResponseEntity<byte[]> getCover(@PathVariable Long bookId) {
+        BookFile cover = bookService.getBookCover(bookId);
+        if (cover == null) return ResponseEntity.notFound().build();
 
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(fileContent.getFileType()))
-                .header("Content-Disposition", "attachment; filename=\"" + fileContent.getFileName() + "\"")
-                .body(fileContent.getContent());
-
-    } catch (IllegalArgumentException e) {
-        return ResponseEntity.notFound().build();
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + cover.getFileName() + "\"")
+                .contentType(MediaType.parseMediaType(cover.getFileType()))
+                .body(cover.getData());
     }
-}
 
-
+    @DeleteMapping("/{bookId}/cover")
+    public ResponseEntity<?> deleteCover(@PathVariable Long bookId) {
+        bookService.deleteCover(bookId);
+        return ResponseEntity.ok("Cover deleted successfully");
+    }
 }

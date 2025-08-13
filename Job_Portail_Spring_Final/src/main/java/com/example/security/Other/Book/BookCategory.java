@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -21,10 +22,19 @@ public class BookCategory {
 
     private String name; // e.g., Fiction, Science, Romance
 
-    // Category ↔ Book (Many-to-Many)
     @ManyToMany(mappedBy = "categories")
     private Set<Book> books = new HashSet<>();
 
-    // Getters & Setters
-    // ...
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof BookCategory)) return false;
+        BookCategory that = (BookCategory) o;
+        return id != null && id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }

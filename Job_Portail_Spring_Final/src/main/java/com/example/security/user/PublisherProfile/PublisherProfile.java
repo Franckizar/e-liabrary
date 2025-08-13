@@ -9,13 +9,13 @@ import com.example.security.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "publisher_profiles")
+@EqualsAndHashCode(exclude = {"user", "books"}) // exclude recursive/back-reference fields
 public class PublisherProfile {
 
     @Id
@@ -30,7 +30,7 @@ public class PublisherProfile {
     private String companyName;
     private String website;
 
-        @OneToMany(mappedBy = "publisher", cascade = CascadeType.ALL)
-        @Builder.Default
+    @OneToMany(mappedBy = "publisher", cascade = CascadeType.ALL)
+    @Builder.Default
     private Set<Book> books = new HashSet<>();
 }

@@ -12,6 +12,7 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "admin_profiles")
+@EqualsAndHashCode(exclude = {"user"})
 public class AdminProfile {
 
     @Id

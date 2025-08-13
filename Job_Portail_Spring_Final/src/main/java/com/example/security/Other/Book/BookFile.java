@@ -1,16 +1,8 @@
 package com.example.security.Other.Book;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
-@Table(name = "book_files")
 public class BookFile {
 
     @Id
@@ -19,17 +11,33 @@ public class BookFile {
 
     private String fileName;
 
-    private String fileType; // e.g., PDF, EPUB, MP3
+    private String fileType;
 
     @Lob
-    private byte[] content;  // store the actual file content
+    private byte[] data; // store file content in SQL as BLOB
 
-    @Lob
-    private String extractedText; // optional, like CV text for PDFs
+    private String type; // e.g., "COVER", "PDF"
 
-    // Book ↔ File (Many-to-One)
     @ManyToOne
-    @JsonIgnore
     @JoinColumn(name = "book_id")
     private Book book;
+
+    // Getters and setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getFileName() { return fileName; }
+    public void setFileName(String fileName) { this.fileName = fileName; }
+
+    public String getFileType() { return fileType; }
+    public void setFileType(String fileType) { this.fileType = fileType; }
+
+    public byte[] getData() { return data; }
+    public void setData(byte[] data) { this.data = data; }
+
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
+
+    public Book getBook() { return book; }
+    public void setBook(Book book) { this.book = book; }
 }
